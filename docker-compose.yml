@@ -1,22 +1,21 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-
   frontend:
-    build: ./frontend
-    depends_on:
-      - backend
-
-  nginx:
-    build: ./nginx
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "80:80"
-    depends_on:
-      - frontend
-      - backend
+    restart: unless-stopped
+    # Uncomment the next line if the frontend needs to wait for the backend
+    # depends_on:
+    #   - backend
 
-
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
