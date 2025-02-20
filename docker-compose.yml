@@ -2,17 +2,30 @@ version: '3.8'
 
 services:
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
     restart: unless-stopped
-    # Uncomment the next line if the frontend needs to wait for the backend
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     # depends_on:
     #   - backend
 
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email joeyschady@gmail.com -d amhsalumni.com --agree-tos
+
   backend:
+    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile

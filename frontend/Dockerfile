@@ -10,8 +10,12 @@ RUN npm run build
 FROM nginx:latest
 # Remove default Nginx static assets
 RUN rm /usr/share/nginx/html/*
+RUN rm /etc/nginx/conf.d/default.conf
+
 # Copy built assets from the builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
+EXPOSE 443
 CMD ["nginx", "-g", "daemon off;"]
