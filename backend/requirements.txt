@@ -3,3 +3,5 @@ uvicorn
 bcrypt
 python-dotenv
 passlib
+python-jose[cryptography]
+python-multipart
