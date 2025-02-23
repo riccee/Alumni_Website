@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import Login from './Login';
 
+import Header from './components/header.jsx'
+
 function App() {
   const [token, setToken] = useState(null);
 
@@ -21,6 +23,8 @@ function App() {
   };
 
   return (
+    <>
+    <Header />
     <div>
       <h1>Alumni Website</h1>
       {token ? (
