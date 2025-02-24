@@ -24,8 +24,8 @@ function App() {
 
   return (
     <>
-    <Header />
     <div>
+    <Header />
       <h1>Alumni Website</h1>
       {token ? (
         <div>
@@ -36,6 +36,7 @@ function App() {
         <Login setToken={setToken} />
       )}
     </div>
+    </>
   );
 }
 
