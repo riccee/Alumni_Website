@@ -6,6 +6,7 @@ import Header from './components/header.jsx'
 
 function App() {
   const [token, setToken] = useState(null);
+  const [response, setResponse] = useState(null)
 
   const fetchUserData = async () => {
     try {
@@ -22,6 +23,17 @@ function App() {
     }
   };
 
+  const fetchDB = async () => {
+    const response = await fetch('/api/db', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    console.log('DB data:', data);
+    setResponse(data);
+  };
+
   return (
     <>
     <div>
@@ -31,6 +43,8 @@ function App() {
         <div>
           <p>Logged in!</p>
           <button onClick={fetchUserData}>Fetch My Profile</button>
+          <button onClick={fetchDB}>Fetch DB</button>
+          {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
         </div>
       ) : (
         <Login setToken={setToken} />

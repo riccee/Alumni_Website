@@ -13,8 +13,10 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    # depends_on:
-    #   - backend
+    depends_on:
+      - backend
+    networks:
+      - app_network
 
   certbot:
     image: certbot/certbot
@@ -23,12 +25,20 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email joeyschady@gmail.com -d amhsalumni.com --agree-tos
+    networks:
+      - app_network
 
   backend:
     container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "8000:8000"
-    restart: unless-stopped
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
