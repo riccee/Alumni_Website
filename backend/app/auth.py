@@ -6,6 +6,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import keys
+from supabase import create_client, Client
 
 
 SECRET_KEY = keys.token_key
@@ -18,15 +19,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme tells FastAPI where to find the token in requests (i.e., the Authorization header)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# A fake user database for demonstration purposes.
-fake_users_db = {
-    "a": {
-        "username": "a",
-        "full_name": "Butt Munch",
-        "email": "buttmunch@example.com",
-        "hashed_password": pwd_context.hash("a"),
-        "disabled": False,
-    }
+supabase: Client = create_client(keys.supa_url, keys.supa_key)
+
+referral_codes = {
+    "test": True,
 }
 
 # Pydantic models for type validation
@@ -46,17 +42,27 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password: str
 
+class UserSignup(BaseModel):
+    username: str
+    password: str
+    referral_code: str
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_user(db, username: str) -> Optional[UserInDB]:
-    if username in db:
-        user_dict = db[username]
+def get_user_from_db(username: str) -> Optional[UserInDB]:
+    result = supabase.table("Login").select("*").eq("username", username).execute()
+    if result.data and len(result.data) > 0:
+        user_dict = result.data[0]
+        # Ensure your Supabase table returns keys matching UserInDB model
         return UserInDB(**user_dict)
     return None
 
-def authenticate_user(db, username: str, password: str) -> Optional[UserInDB]:
-    user = get_user(db, username)
+def get_user(username: str) -> Optional[UserInDB]:
+    return get_user_from_db(username)
+
+def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
+    user = get_user(username)
     if not user:
         return None
     if not verify_password(password, user.hashed_password):
@@ -85,7 +91,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(token_data.username)
     if user is None:
         raise credentials_exception
     return user

@@ -1,12 +1,13 @@
 // App.js
 import React, { useState } from 'react';
 import Login from './Login';
-
+import Signup from './Signup';
 import Header from './components/header.jsx'
 
 function App() {
   const [token, setToken] = useState(null);
   const [response, setResponse] = useState(null)
+  const [showSignup, setShowSignup] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -37,7 +38,6 @@ function App() {
   return (
     <>
     <div>
-    <Header />
       <h1>Alumni Website</h1>
       {token ? (
         <div>
@@ -47,7 +47,16 @@ function App() {
           {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
         </div>
       ) : (
-        <Login setToken={setToken} />
+        <div>
+        {showSignup ? (
+          <Signup setToken={setToken} />
+        ) : (
+          <Login setToken={setToken} />
+        )}
+        <button onClick={() => setShowSignup(!showSignup)}>
+          {showSignup ? 'Have an account? Login' : "Don't have an account? Sign Up"}
+        </button>
+      </div>
       )}
     </div>
     </>
