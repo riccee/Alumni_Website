@@ -1,16 +1,12 @@
-from supabase import create_client, Client
-import keys
-from fastapi import APIRouter, HTTPException, Request, Depends
-from auth import get_current_user
+from fastapi import APIRouter, Depends
+from app.db.supabase_conn import get_supabase_client
+from app.routers.auth import get_current_user
+from app.models.user import UserInDB
 
-router = APIRouter(
-    prefix='/db',
-)
+db_router = APIRouter()
 
-@router.get("/")
-async def connect_db(current_user=Depends(get_current_user)):
-    url = keys.supa_url
-    key= keys.supa_key
-    supabase: Client = create_client(url, key) 
-    response = supabase.table('Alumni_Info').select("*").execute()
+@db_router.get("/alumni", summary="Retrieve alumni info")
+async def get_alumni_data(current_user: UserInDB = Depends(get_current_user)):
+    supabase = get_supabase_client()
+    response = supabase.table("Alumni_Info").select("*").execute()
     return response.data

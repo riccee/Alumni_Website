@@ -11,7 +11,7 @@ function App() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch('/api/users/me', {
+      const response = await fetch('/api/auth/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -25,7 +25,7 @@ function App() {
   };
 
   const fetchDB = async () => {
-    const response = await fetch('/api/db', {
+    const response = await fetch('/api/alumni', {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -14,7 +14,7 @@ const Login = ({ setToken }) => {
     formData.append('password', password);
 
     try {
-      const response = await fetch('/api/token', {
+      const response = await fetch('/api/auth/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

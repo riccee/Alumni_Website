@@ -18,7 +18,7 @@ const Signup = ({ setToken }) => {
     const payload = { username, password, referral_code: referralCode };
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
