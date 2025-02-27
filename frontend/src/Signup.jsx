@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 
-const Signup = ({ setToken }) => {
+const Signup = ({ onSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (password !== confirmPassword) {
       setPasswordError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
@@ -24,6 +27,7 @@ const Signup = ({ setToken }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -31,12 +35,12 @@ const Signup = ({ setToken }) => {
         throw new Error(errorText);
       }
 
-      const data = await response.json();
-      // Store the token (in production, consider secure storage or HTTP-only cookies)
-      setToken(data.access_token);
+      onSuccess();
     } catch (error) {
       console.error('Signup failed:', error);
       alert('Signup failed: ' + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +83,9 @@ const Signup = ({ setToken }) => {
           required
         />
       </div>
-      <button type="submit">Sign Up</button>
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'Sign Up'}
+      </button>
     </form>
   );
 };

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import JWTError, jwt
 
@@ -13,60 +13,98 @@ auth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
-# Dependency to get the current user
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
+def get_current_user_from_cookie(request: Request) -> UserInDB:
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
 
-    user = get_user_by_username(token_data.username)
+    if token.startswith("Bearer "):
+        token = token[len("Bearer "):]
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
+        )
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user = get_user_by_username(payload["sub"])
     if not user:
-        raise credentials_exception
+        raise HTTPException(status_code=401, detail="User not found")
+
     return user
 
 
 @auth_router.post("/token", response_model=Token, summary="Obtain an access token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends()
+):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    
     access_token = create_access_token(
         data={"sub": user.username}, 
-        expires_delta=access_token_expires
     )
+    response.set_cookie(
+        key="access_token",
+        value=f"Bearer {access_token}",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=3600,
+        path="/"
+    )
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @auth_router.get("/me", response_model=UserRead, summary="Get the current user")
-async def read_users_me(current_user: UserInDB = Depends(get_current_user)):
+async def read_users_me(current_user: UserInDB = Depends(get_current_user_from_cookie)):
     # Convert UserInDB to a public schema (UserRead)
     return current_user
 
 
 @auth_router.post("/signup", response_model=Token, summary="Sign up a new user")
-async def sign_up(user_data: UserCreate):
+async def sign_up(
+    user_data: UserCreate,
+    response: Response
+):
     try:
         user_in_db = create_user(user_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     # Issue a JWT token for the new user
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user_in_db.username}, 
-        expires_delta=access_token_expires
+
+    access_token = create_access_token(data={"sub": user_in_db.username})
+    response.set_cookie(
+        key="access_token",
+        value=f"Bearer {access_token}",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=3600,
+        path="/"
     )
+
     return {"access_token": access_token, "token_type": "bearer"}
+
+@auth_router.post("/logout", summary="Logout a user")
+async def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        secure=True,
+        httponly=True
+    )
+    return {"message": "Logged out successfully"}

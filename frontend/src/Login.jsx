@@ -1,13 +1,13 @@
 // Login.js
 import React, { useState } from 'react';
 
-const Login = ({ setToken }) => {
+const Login = ({ onSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     // Prepare form data according to OAuth2 spec (x-www-form-urlencoded)
     const formData = new URLSearchParams();
     formData.append('username', username);
@@ -20,18 +20,19 @@ const Login = ({ setToken }) => {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData.toString(),
+        credentials: 'include',
       });
 
       if (!response.ok) {
         throw new Error('Login failed');
       }
 
-      const data = await response.json();
-      // Store the token (in production, consider secure storage or HTTP-only cookies)
-      setToken(data.access_token);
+      onSuccess();
     } catch (error) {
       console.error('Error during login:', error);
       alert('Login failed. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,7 +56,9 @@ const Login = ({ setToken }) => {
           required
         />
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'Login'}
+      </button>
     </form>
   );
 };
