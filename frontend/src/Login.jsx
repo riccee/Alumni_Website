@@ -1,66 +1,59 @@
 // Login.js
-import React, { useState } from 'react';
+import React from "react";
+import { Box, CssBaseline } from "@mui/material";
+import Footer from "./components/Footer";
+import LoginForm from "./components/LoginForm";
 
-const Login = ({ onSuccess }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Prepare form data according to OAuth2 spec (x-www-form-urlencoded)
-    const formData = new URLSearchParams();
-    formData.append('username', username);
-    formData.append('password', password);
+const Login = ({ onSuccess, onToggleSignup }) => {
+    return (
+        <>
+            {/* Remove default browser margins/padding */}
+            <CssBaseline />
 
-    try {
-      const response = await fetch('/api/auth/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData.toString(),
-        credentials: 'include',
-      });
+            <Box
+                sx={{
+                    width: "100vw",
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor: "white",
+                }}
+            >
+                {/* Main Content */}
+                <Box
+                    component="main"
+                    sx={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        py: 6,
+                        width: "100%",
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: "100%",
+                            maxWidth: 800,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            px: 2,
+                        }}
+                    >
+                        {/* Login Form */}
+                        <LoginForm
+                            onSuccess={onSuccess}
+                            onToggleSignup={onToggleSignup}
+                        />
+                    </Box>
+                </Box>
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      onSuccess();
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('Login failed. Please check your credentials.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Username: </label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Password: </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'Login'}
-      </button>
-    </form>
-  );
+                {/* Footer */}
+                <Footer />
+            </Box>
+        </>
+    );
 };
 
 export default Login;
