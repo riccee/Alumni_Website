@@ -20,35 +20,11 @@ const Login = ({ onSuccess, onToggleSignup }) => {
                 }}
             >
                 {/* Main Content */}
-                <Box
-                    component="main"
-                    sx={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        py: 6,
-                        width: "100%",
-                    }}
-                >
-                    <Box
-                        sx={{
-                            width: "100%",
-                            maxWidth: 800,
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            px: 2,
-                        }}
-                    >
                         {/* Login Form */}
                         <LoginForm
                             onSuccess={onSuccess}
                             onToggleSignup={onToggleSignup}
                         />
-                    </Box>
-                </Box>
-
                 {/* Footer */}
                 <Footer />
             </Box>
