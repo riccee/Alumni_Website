@@ -1,8 +1,9 @@
 # Stage 1: Build the React app with Vite
 FROM node:lts-alpine as builder
 WORKDIR /app
+RUN npm install -g npm@latest
 COPY package.json package-lock.json ./
-RUN npm install --frozen-lockfile
+RUN npm install --frozen-lockfile --legacy-peer-deps
 COPY . .
 RUN npm run build
 

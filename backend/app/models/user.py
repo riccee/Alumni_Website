@@ -3,10 +3,10 @@ from pydantic import BaseModel
 
 # Shared user properties
 class UserBase(BaseModel):
-    username: str
-    full_name: Optional[str] = None
-    email: Optional[str] = None
-    disabled: Optional[bool] = False
+    email: str
+    firstname: str
+    lastname: str
+    disable: Optional[bool] = False
 
 class UserCreate(UserBase):
     password: str
@@ -26,4 +26,5 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    email: Optional[str] = None
+    
