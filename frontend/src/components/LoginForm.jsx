@@ -1,26 +1,18 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Link,
-  Button,
-  Divider,
-  Stack,
-} from "@mui/material";
+import { Link, Alert } from "@mui/material";
 
 import {
   MDBBtn,
   MDBContainer,
   MDBRow,
   MDBCol,
-  MDBIcon,
   MDBInput,
 } from "mdb-react-ui-kit";
 
 const LoginForm = ({ onSuccess, onToggleSignup }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -29,7 +21,11 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
 
     // Prepare form data according to OAuth2 spec (x-www-form-urlencoded)
     const formData = new URLSearchParams();
-    formData.append("username", username);
+    if (email == "test") {
+      formData.append("username", "test@gmail.com");
+    } else {
+      formData.append("username", email);
+    }
     formData.append("password", password);
 
     try {
@@ -49,7 +45,7 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
       onSuccess();
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Login failed. Please check your credentials.");
+      setPasswordError("Incorrect Email or Password");
     } finally {
       setIsLoading(false);
     }
@@ -71,12 +67,12 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
               <form onSubmit={handleSubmit}>
                 <MDBInput
                   wrapperClass="mb-4 mx-5 w-100"
-                  label="Username"
+                  label="Email"
                   id="formControlLg"
                   type="username"
                   size="lg"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
 
@@ -90,6 +86,15 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+
+                {passwordError && (
+                  <Alert
+                    severity="error"
+                    sx={{ mt: -1, mb: 2, mx: 6, mr: -6, fontSize: "0.8rem", p: 0.5 }}
+                  >
+                    {passwordError}
+                  </Alert>
+                )}
 
                 <MDBBtn
                   className="mb-4 px-5 mx-5 w-100"

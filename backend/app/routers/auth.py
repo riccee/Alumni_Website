@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from app.models.user import UserRead, Token, TokenData, UserCreate, UserInDB
-from app.services.user_service import authenticate_user, create_user, get_user_by_username
+from app.services.user_service import authenticate_user, create_user, get_user_by_email
 from app.core.security import create_access_token
 from app.core.config import settings
 
@@ -34,7 +34,7 @@ def get_current_user_from_cookie(request: Request) -> UserInDB:
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    user = get_user_by_username(payload["sub"])
+    user = get_user_by_email(payload["sub"])
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
 
@@ -50,11 +50,11 @@ async def login_for_access_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
         )
     
     access_token = create_access_token(
-        data={"sub": user.username}, 
+        data={"sub": user.email}, 
     )
     response.set_cookie(
         key="access_token",
@@ -86,7 +86,7 @@ async def sign_up(
         raise HTTPException(status_code=400, detail=str(e))
     # Issue a JWT token for the new user
 
-    access_token = create_access_token(data={"sub": user_in_db.username})
+    access_token = create_access_token(data={"sub": user_in_db.email})
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",

@@ -9,12 +9,10 @@ import {
 } from "mdb-react-ui-kit";
 
 const SignupForm = ({ onSuccess, onToggleSignup }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("")
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [undergradUniversity, setUnderGradUniversity] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -31,7 +29,9 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
     }
 
     const payload = {
-      username,
+      firstname,
+      lastname,
+      email,
       password,
       referral_code: referralCode,
     };
@@ -72,14 +72,41 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
               </h3>
 
               <form onSubmit={handleSubmit}>
+                <MDBRow>
+                  <MDBCol col="6">
+                    <MDBInput
+                      wrapperClass="mb-4 mx-5 w-100"
+                      label="First Name"
+                      id="formControlLg"
+                      type="firstname"
+                      size="lg"
+                      value={firstname}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                  </MDBCol>
+                  <MDBCol col="6">
+                    <MDBInput
+                      wrapperClass="mb-4 mx-5 w-100"
+                      label="Last Name"
+                      id="formControlLg"
+                      type="lastname"
+                      size="lg"
+                      value={lastname}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                    />
+                  </MDBCol>
+                </MDBRow>
+
                 <MDBInput
                   wrapperClass="mb-4 mx-5 w-100"
-                  label="Username"
+                  label="Email"
                   id="formControlLg"
-                  type="username"
+                  type="email"
                   size="lg"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
 
@@ -109,7 +136,10 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
                 />
 
                 {passwordError && (
-                  <Alert severity="error" sx={{ mt: -1, mb: 2, mx: 5, fontSize: "0.8rem", p: 0.5 }}>
+                  <Alert
+                    severity="error"
+                    sx={{ mt: -1, mb: 2, mx: 6, mr: -6, fontSize: "0.8rem", p: 0.5 }}
+                  >
                     {passwordError}
                   </Alert>
                 )}
@@ -130,7 +160,7 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
                   style={{ backgroundColor: "#c9a952" }}
                   size="lg"
                 >
-                  Login
+                  Sign Up
                 </MDBBtn>
               </form>
               {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
