@@ -7,25 +7,67 @@ import {
   MDBCol,
   MDBInput,
 } from "mdb-react-ui-kit";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-const SignupForm = ({ onSuccess}) => {
-  const [email, setEmail] = useState("")
+const validatePassword = (password) => {
+  const errors = [];
+  if (password.length < 8)
+    errors.push("Password must be at least 8 characters long.");
+  if (!/\d/.test(password))
+    errors.push("Password must contain at least one digit.");
+  if (!/[A-Z]/.test(password))
+    errors.push("Password must contain at least one uppercase letter.");
+  if (!/[a-z]/.test(password))
+    errors.push("Password must contain at least one lowercase letter.");
+  return errors;
+};
+
+const SignupForm = ({ onSuccess }) => {
+  const [email, setEmail] = useState("");
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState([]);
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setPasswordErrors(validatePassword(newPassword));
+
+    if (confirmPassword && newPassword !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  // Handle Confirm Password Change
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    if (password !== e.target.value) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
+    if (passwordErrors.length > 0) {
+      alert("Please fix password errors before submitting.");
+      setIsLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setConfirmPasswordError("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -52,7 +94,7 @@ const SignupForm = ({ onSuccess}) => {
       }
 
       onSuccess();
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Signup failed:", error);
       alert("Signup failed: " + error.message);
@@ -120,12 +162,27 @@ const SignupForm = ({ onSuccess}) => {
                   type="password"
                   size="lg"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    validatePasswords(e.target.value, confirmPassword);
-                  }}
+                  onChange={handlePasswordChange}
                   required
                 />
+
+                {passwordErrors.length > 0 && (
+                  <Alert
+                    severity="error"
+                    sx={{
+                      mt: -1,
+                      mb: 2,
+                      mx: 6,
+                      mr: -6,
+                      fontSize: "0.8rem",
+                      p: 0.5,
+                    }}
+                  >
+                    {passwordErrors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </Alert>
+                )}
 
                 <MDBInput
                   wrapperClass="mb-4 mx-5 w-100"
@@ -134,16 +191,16 @@ const SignupForm = ({ onSuccess}) => {
                   type="password"
                   size="lg"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={handleConfirmPasswordChange}
                   required
                 />
 
-                {passwordError && (
+                {confirmPasswordError && (
                   <Alert
                     severity="error"
-                    sx={{ mt: -1, mb: 2, mx: 6, mr: -6, fontSize: "0.8rem", p: 0.5 }}
+                    sx={{ mt: -1, mb: 2, mx: 6, fontSize: "0.8rem", p: 0.5 }}
                   >
-                    {passwordError}
+                    {confirmPasswordError}
                   </Alert>
                 )}
 
@@ -162,6 +219,8 @@ const SignupForm = ({ onSuccess}) => {
                   className="mb-4 px-5 mx-5 w-100"
                   style={{ backgroundColor: "#c9a952" }}
                   size="lg"
+                  type="submit"
+                  disabled={passwordErrors.length > 0 || confirmPasswordError || isLoading}
                 >
                   Sign Up
                 </MDBBtn>
@@ -169,7 +228,7 @@ const SignupForm = ({ onSuccess}) => {
               {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
               <p className="ms-5">
                 Already have an account?{" "}
-                <Link component="button" onClick={() => navigate('/login')}>
+                <Link component="button" onClick={() => navigate("/login")}>
                   Login here
                 </Link>
               </p>
