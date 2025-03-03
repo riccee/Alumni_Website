@@ -1,213 +1,131 @@
 import React, { useState } from "react";
+import { Link, Alert } from "@mui/material";
+
 import {
-    Box,
-    Typography,
-    TextField,
-    Link,
-    Button,
-    Divider,
-    Stack,
-} from "@mui/material";
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBInput,
+} from "mdb-react-ui-kit";
 
 const LoginForm = ({ onSuccess, onToggleSignup }) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-        // Prepare form data according to OAuth2 spec (x-www-form-urlencoded)
-        const formData = new URLSearchParams();
-        formData.append("username", username);
-        formData.append("password", password);
+    // Prepare form data according to OAuth2 spec (x-www-form-urlencoded)
+    const formData = new URLSearchParams();
+    if (email == "test") {
+      formData.append("username", "test@gmail.com");
+    } else {
+      formData.append("username", email);
+    }
+    formData.append("password", password);
 
-        try {
-            const response = await fetch("/api/auth/token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: formData.toString(),
-                credentials: "include",
-            });
+    try {
+      const response = await fetch("/api/auth/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
+        credentials: "include",
+      });
 
-            if (!response.ok) {
-                throw new Error("Login failed");
-            }
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
 
-            onSuccess();
-        } catch (error) {
-            console.error("Error during login:", error);
-            alert("Login failed. Please check your credentials.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      onSuccess();
+    } catch (error) {
+      console.error("Error during login:", error);
+      setPasswordError("Incorrect Email or Password");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-        <>
-            <Typography
-                variant="h1"
-                component="h1"
-                sx={{
-                    fontSize: { xs: 36, md: 48 },
-                    fontWeight: "bold",
-                    mb: 2,
-                    color: "#000000",
-                    textAlign: "center",
-                }}
-            >
-                LOGIN
-            </Typography>
+  return (
+    <>
+      <MDBContainer fluid>
+        <MDBRow>
+          <MDBCol sm="6">
+            <div className="d-flex flex-column justify-content-center h-custom-2 w-75 pt-4">
+              <h3
+                className="fw-normal mb-3 ps-5 pb-3"
+                style={{ letterSpacing: "1px" }}
+              >
+                Log in
+              </h3>
 
-            <Divider
-                sx={{
-                    bgcolor: "#14542c",
-                    height: 4,
-                    width: "100%",
-                    mb: 6,
-                }}
+              <form onSubmit={handleSubmit}>
+                <MDBInput
+                  wrapperClass="mb-4 mx-5 w-100"
+                  label="Email"
+                  id="formControlLg"
+                  type="username"
+                  size="lg"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+
+                <MDBInput
+                  wrapperClass="mb-4 mx-5 w-100"
+                  label="Password"
+                  id="formControlLg"
+                  type="password"
+                  size="lg"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+
+                {passwordError && (
+                  <Alert
+                    severity="error"
+                    sx={{ mt: -1, mb: 2, mx: 6, mr: -6, fontSize: "0.8rem", p: 0.5 }}
+                  >
+                    {passwordError}
+                  </Alert>
+                )}
+
+                <MDBBtn
+                  className="mb-4 px-5 mx-5 w-100"
+                  style={{ backgroundColor: "#c9a952" }}
+                  size="lg"
+                >
+                  Login
+                </MDBBtn>
+              </form>
+              {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
+              <p className="ms-5">
+                Don't have an account?{" "}
+                <Link component="button" onClick={() => onToggleSignup(true)}>
+                  Register here
+                </Link>
+              </p>
+            </div>
+          </MDBCol>
+
+          <MDBCol sm="6" className="d-none d-sm-block px-0">
+            <img
+              src="https://today.citadel.edu/wp-content/uploads/2021/06/Jacob-Perlmutter-CGC-09.jpg"
+              alt="Login image"
+              className="w-100"
+              style={{ objectFit: "cover", objectPosition: "left" }}
             />
-
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{ width: "100%", maxWidth: 600 }}
-            >
-                <Stack spacing={3}>
-                    {/* USERNAME row */}
-                    <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        alignItems={{ xs: "flex-start", sm: "center" }}
-                    >
-                        {/* Label box */}
-                        <Box sx={{ minWidth: { sm: "30%" } }}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    lineHeight: "48px",
-                                    textAlign: { xs: "left", sm: "right" },
-                                    pr: { sm: 2 },
-                                    color: "#000000",
-                                }}
-                            >
-                                Username:
-                            </Typography>
-                        </Box>
-
-                        {/* Input box (grow in row mode) */}
-                        <Box sx={{ flex: 1 }}>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                placeholder="Type..."
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                                size="medium"
-                                sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                        "& input": { color: "#000000" },
-                                        "& fieldset": {
-                                            borderColor: "#14542c",
-                                        },
-                                        "&:hover fieldset": {
-                                            borderColor: "#14542c",
-                                        },
-                                    },
-                                }}
-                            />
-                        </Box>
-                    </Stack>
-
-                    {/* PASSWORD row */}
-                    <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        alignItems={{ xs: "flex-start", sm: "center" }}
-                    >
-                        <Box sx={{ minWidth: { sm: "30%" } }}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    lineHeight: "48px",
-                                    textAlign: { xs: "left", sm: "right" },
-                                    pr: { sm: 2 },
-                                    color: "#000000",
-                                }}
-                            >
-                                Password:
-                            </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                placeholder="Type..."
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                size="medium"
-                                sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                        "& input": { color: "#000000" },
-                                        "& fieldset": {
-                                            borderColor: "#14542c",
-                                        },
-                                        "&:hover fieldset": {
-                                            borderColor: "#14542c",
-                                        },
-                                    },
-                                }}
-                            />
-                        </Box>
-                    </Stack>
-                </Stack>
-
-                <Box sx={{ mt: 3, textAlign: "center" }}>
-                    <Typography variant="body1" sx={{ color: "#828282" }}>
-                        Not a member?{" "}
-                        <Link
-                            component="button"
-                            onClick={() => onToggleSignup(true)}
-                            sx={{
-                                color: "#828282",
-                                textDecoration: "underline",
-                                "&:hover": {
-                                    color: "#14542c",
-                                },
-                            }}
-                        >
-                            Sign up here.
-                        </Link>
-                    </Typography>
-                </Box>
-
-                <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isLoading}
-                        sx={{
-                            bgcolor: "#c9a952",
-                            width: "100%",
-                            maxWidth: 400,
-                            height: 56,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            "&:hover": {
-                                bgcolor: "#b39345",
-                            },
-                        }}
-                    >
-                        {isLoading ? "Loading..." : "Submit"}
-                    </Button>
-                </Box>
-            </Box>
-        </>
-    );
+          </MDBCol>
+        </MDBRow>
+      </MDBContainer>
+    </>
+  );
 };
 
 export default LoginForm;

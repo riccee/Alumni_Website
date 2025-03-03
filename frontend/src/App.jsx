@@ -76,11 +76,10 @@ function App() {
                 <div>Loading...</div>
             ) : (
                 <div>
-                    <Header isAuthenticated={isAuthenticated} />
+                    <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
                     {isAuthenticated ? (
                         <div>
                             <Directory 
-                                onLogout={handleLogout} 
                                 onFetchUser={fetchUserData} 
                                 onFetchDB={fetchDB} 
                             />
