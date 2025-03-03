@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, Alert } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 
 import {
   MDBBtn,
@@ -9,11 +10,13 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 
-const LoginForm = ({ onSuccess, onToggleSignup }) => {
+const LoginForm = ({ onSuccess = () => {} }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,6 +46,7 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
       }
 
       onSuccess();
+      navigate('/');
     } catch (error) {
       console.error("Error during login:", error);
       setPasswordError("Incorrect Email or Password");
@@ -90,11 +94,28 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
                 {passwordError && (
                   <Alert
                     severity="error"
-                    sx={{ mt: -1, mb: 2, mx: 6, mr: -6, fontSize: "0.8rem", p: 0.5 }}
+                    sx={{
+                      mt: -1,
+                      mb: 2,
+                      mx: 6,
+                      mr: -6,
+                      fontSize: "0.8rem",
+                      p: 0.5,
+                    }}
                   >
                     {passwordError}
                   </Alert>
                 )}
+
+                <div className="text-end mb-4 mx-5">
+                  <Link
+                    component="button"
+                    onClick={() => navigate('/forgot-password')}
+                    sx={{ textDecoration: "none", fontSize: "0.9rem" }}
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
 
                 <MDBBtn
                   className="mb-4 px-5 mx-5 w-100"
@@ -107,7 +128,7 @@ const LoginForm = ({ onSuccess, onToggleSignup }) => {
               {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
               <p className="ms-5">
                 Don't have an account?{" "}
-                <Link component="button" onClick={() => onToggleSignup(true)}>
+                <Link component="button" onClick={() => navigate('/signup')}>
                   Register here
                 </Link>
               </p>

@@ -3,7 +3,7 @@ import { Box, CssBaseline } from "@mui/material";
 import Footer from "./components/Footer";
 import SignupForm from "./components/SignupForm";
 
-const Signup = ({ onSuccess, onToggleSignup }) => {
+const Signup = ({ onSuccess }) => {
   return (
     <>
       {/* Remove default browser margins/padding */}
@@ -20,7 +20,7 @@ const Signup = ({ onSuccess, onToggleSignup }) => {
       >
         {/* Main Content */}
 
-        <SignupForm onSuccess={onSuccess} onToggleSignup={onToggleSignup} />
+        <SignupForm onSuccess={onSuccess} />
         <Footer />
       </Box>
     </>

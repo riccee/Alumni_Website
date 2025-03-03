@@ -7,8 +7,9 @@ import {
   MDBCol,
   MDBInput,
 } from "mdb-react-ui-kit";
+import { useNavigate } from 'react-router-dom';
 
-const SignupForm = ({ onSuccess, onToggleSignup }) => {
+const SignupForm = ({ onSuccess}) => {
   const [email, setEmail] = useState("")
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
@@ -17,6 +18,7 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
   const [referralCode, setReferralCode] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +52,7 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
       }
 
       onSuccess();
+      navigate('/');
     } catch (error) {
       console.error("Signup failed:", error);
       alert("Signup failed: " + error.message);
@@ -166,7 +169,7 @@ const SignupForm = ({ onSuccess, onToggleSignup }) => {
               {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
               <p className="ms-5">
                 Already have an account?{" "}
-                <Link component="button" onClick={() => onToggleSignup(true)}>
+                <Link component="button" onClick={() => navigate('/login')}>
                   Login here
                 </Link>
               </p>

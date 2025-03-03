@@ -47,3 +47,19 @@ def create_user(user_data: UserCreate) -> UserInDB:
         raise ValueError("Failed to create user in DB")
 
     return UserInDB(**result.data[0])
+
+async def update_user_password(email: str, new_password: str) -> UserInDB:
+    supabase = get_supabase_client()
+    
+    # Hash the new password
+    hashed_password = get_password_hash(new_password)
+    
+    # Update the user's password in the database
+    result = supabase.table("Users").update({
+        "hashed_password": hashed_password
+    }).eq("email", email).execute()
+    
+    if not result.data:
+        raise ValueError("Failed to update password")
+        
+    return UserInDB(**result.data[0])
