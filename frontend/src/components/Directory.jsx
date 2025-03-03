@@ -1,25 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Divider, CssBaseline, Paper, Stack, Grid, } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"
+import {
+  Box,
+  Typography,
+  Button,
+  Divider,
+  CssBaseline,
+  Paper,
+  Stack,
+  Grid,
+  TextField,
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [alumniData, setAlumniData] = useState([]); // State to store fetched data
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-        setIsLoading(true);
-        try {
-            const data = await onFetchDB();
-            if (data) setAlumniData(data); 
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-        setIsLoading(false);
+      setIsLoading(true);
+      try {
+        const data = await onFetchDB();
+        if (data) setAlumniData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setIsLoading(false);
     };
     fetchData();
-}, [onFetchDB]);
+  }, [onFetchDB]);
 
+  const filteredAlumni = alumniData.filter((item) =>
+    `${item.First_Name} ${item.Last_Name}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <>
@@ -79,9 +95,18 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
               }}
             />
 
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Search by Name"
+              sx={{ mb: 3 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
             <Grid container spacing={3} direction="column">
-              {alumniData.length > 0 ? (
-                alumniData.map((item) => (
+              {filteredAlumni.length > 0 ? (
+                filteredAlumni.map((item) => (
                   <Grid item xs={12} sm={6} md={4} key={item.Alumni_Id}>
                     <Paper
                       elevation={2}
@@ -101,10 +126,16 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
                         </Stack>
                       </Stack>
                       <Stack spacing={1}>
-                        <Typography variant="h6">Location: {item.Location}</Typography>
-                        <Typography variant="body1">Undergraduate Program: {item.Undergrad_School}</Typography>
+                        <Typography variant="h6">
+                          Location: {item.Location}
+                        </Typography>
+                        <Typography variant="body1">
+                          Undergraduate Program: {item.Undergrad_School}
+                        </Typography>
                         {item.grad?.trim() && (
-                          <Typography variant="body1">Graduate Program: {item.Graduate_Program}</Typography>
+                          <Typography variant="body1">
+                            Graduate Program: {item.Graduate_Program}
+                          </Typography>
                         )}
                         <Typography variant="body1">{item.Email}</Typography>
                       </Stack>
@@ -165,6 +196,5 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
     </>
   );
 };
-
 
 export default Directory;
