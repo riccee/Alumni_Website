@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -11,38 +11,24 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-const data = [
-  {
-    Alumni_Id: 1,
-    firstName: "Abby",
-    lastName: "Youmans",
-    location: "Mt. Pleasant",
-    undergrad: "Yale University",
-    grad: " ",
-    email: "blah@dumb.com",
-  },
-  {
-    Alumni_Id: 2,
-    firstName: "Bowen",
-    lastName: "Gao",
-    location: "James Island",
-    undergrad: "Princeton University ",
-    grad: "University of Michigan",
-    email: "blah@dumb.com",
-  },
-  {
-    Alumni_Id: 3,
-    firstName: "Carolina",
-    lastName: "Cararra",
-    location: "Charleston",
-    undergrad: "Winthrop University",
-    grad: "Harvard Univesity",
-    email: "blah@dumb.com",
-  },
-];
 
-const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
+const DirectoryData = ({ onLogout, onFetchUser, onFetchDB }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [alumniData, setAlumniData] = useState([]); // State to store fetched data
+
+  useEffect(() => {
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const data = await onFetchDB();
+            if (data) setAlumniData(data); 
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+        setIsLoading(false);
+    };
+    fetchData();
+}, [onFetchDB]);
 
   return (
     <>
@@ -80,8 +66,8 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
             }}
           >
             <Typography
-              variant="h1"
-              component="h1"
+              variant="h3"
+              component="h3"
               sx={{
                 fontSize: { xs: 36, md: 48 },
                 fontWeight: "bold",
@@ -103,36 +89,42 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
             />
 
             <Grid container spacing={3} direction="column">
-              {data.map((item) => (
-                <Grid item xs={12} sm={6} md={4} key={item.Alumni_Id}>
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      p: 2,
-                      width: "100%",
-                      height: 200,
-                    }}
-                  >
-                    <Stack direction="row" spacing={2}>
-                      <AccountCircleIcon sx={{ fontSize: 30 }} />
-                      <Stack direction="row">
-                        <Typography variant="h5" sx={{ pr: 1 }}>
-                          {item.firstName}
-                        </Typography>
-                        <Typography variant="h5">{item.lastName}</Typography>
+              {alumniData.length > 0 ? (
+                alumniData.map((item) => (
+                  <Grid item xs={12} sm={6} md={4} key={item.Alumni_Id}>
+                    <Paper
+                      elevation={2}
+                      sx={{
+                        p: 2,
+                        width: "100%",
+                        height: "auto",
+                      }}
+                    >
+                      <Stack direction="row" spacing={2}>
+                        <AccountCircleIcon sx={{ fontSize: 30 }} />
+                        <Stack direction="row">
+                          <Typography variant="h5" sx={{ pr: 1 }}>
+                            {item.First_Name}
+                          </Typography>
+                          <Typography variant="h5">{item.Last_Name}</Typography>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                    <Stack spacing={2}>
-                      <Typography variant="h6">{item.location}</Typography>
-                      <Typography variant="body1">{item.undergrad}</Typography>
-                      {item.grad.trim() && ( // Only render this if grad is not empty
-                        <Typography variant="body1">{item.grad}</Typography>
-                      )}
-                      <Typography variant="body1">{item.email}</Typography>
-                    </Stack>
-                  </Paper>
-                </Grid>
-              ))}
+                      <Stack spacing={1}>
+                        <Typography variant="h6">Location: {item.Location}</Typography>
+                        <Typography variant="body1">Undergraduate Program: {item.Undergrad_School}</Typography>
+                        {item.grad?.trim() && (
+                          <Typography variant="body1">Graduate Program: {item.Graduate_Program}</Typography>
+                        )}
+                        <Typography variant="body1">{item.Email}</Typography>
+                      </Stack>
+                    </Paper>
+                  </Grid>
+                ))
+              ) : (
+                <Typography variant="body1" sx={{ textAlign: "center" }}>
+                  No data available. Click "Fetch DB" to load.
+                </Typography>
+              )}
             </Grid>
 
             <Box sx={{ mt: 3, textAlign: "center" }}>
@@ -204,4 +196,4 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
   );
 };
 
-export default Directory;
+export default DirectoryData;
