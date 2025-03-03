@@ -64,7 +64,7 @@ function App() {
         credentials: "include",
       });
       const data = await response.json();
-      setResponse(data);
+      return data
     } catch (error) {
       console.error("Error fetching DB:", error);
     } finally {
