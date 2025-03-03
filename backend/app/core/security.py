@@ -28,3 +28,27 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         algorithm=settings.ALGORITHM
     )
     return encoded_jwt
+
+def create_password_reset_token(email: str) -> str:
+    """Create a password reset token that expires in 30 minutes"""
+    expire = datetime.utcnow() + timedelta(minutes=30)
+    data = {
+        "sub": email,
+        "exp": expire,
+        "type": "password_reset"
+    }
+    return jwt.encode(data, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def verify_password_reset_token(token: str) -> str | None:
+    """Verify the password reset token and return the email if valid"""
+    try:
+        payload = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
+        if payload.get("type") != "password_reset":
+            return None
+        return payload.get("sub")
+    except jwt.JWTError:
+        return None

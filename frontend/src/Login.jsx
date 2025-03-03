@@ -4,7 +4,7 @@ import { Box, CssBaseline } from "@mui/material";
 import Footer from "./components/Footer";
 import LoginForm from "./components/LoginForm";
 
-const Login = ({ onSuccess, onToggleSignup }) => {
+const Login = ({ onSuccess }) => {
   return (
     <>
       {/* Remove default browser margins/padding */}
@@ -21,7 +21,7 @@ const Login = ({ onSuccess, onToggleSignup }) => {
       >
         {/* Main Content */}
         {/* Login Form */}
-        <LoginForm onSuccess={onSuccess} onToggleSignup={onToggleSignup} />
+        <LoginForm onSuccess={onSuccess}/>
         {/* Footer */}
         <Footer />
       </Box>
