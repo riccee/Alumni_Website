@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Divider, CssBaseline, Paper, Stack, Grid, } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 
 const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -156,27 +157,6 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
                 >
                   {isLoading ? "Loading..." : "Fetch User"}
                 </Button>
-
-                <Box sx={{ mt: 3, textAlign: "center" }}>
-                  <Button
-                    variant="contained"
-                    disabled={isLoading}
-                    sx={{
-                      bgcolor: "#c9a952",
-                      width: "100%",
-                      maxWidth: 400,
-                      height: 56,
-                      fontSize: 18,
-                      fontWeight: "bold",
-                      "&:hover": {
-                        bgcolor: "#b39345",
-                      },
-                    }}
-                    onClick={onFetchDB}
-                  >
-                    {isLoading ? "Loading..." : "Fetch DB"}
-                  </Button>
-                </Box>
               </Box>
             </Box>
           </Box>
