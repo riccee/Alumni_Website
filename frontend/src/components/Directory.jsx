@@ -144,52 +144,10 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
                 ))
               ) : (
                 <Typography variant="body1" sx={{ textAlign: "center" }}>
-                  No data available. Click "Fetch DB" to load.
+                  Loading...
                 </Typography>
               )}
             </Grid>
-
-            <Box sx={{ mt: 3, textAlign: "center" }}>
-              <Button
-                variant="contained"
-                disabled={isLoading}
-                sx={{
-                  bgcolor: "#c9a952",
-                  width: "100%",
-                  maxWidth: 400,
-                  height: 56,
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  "&:hover": {
-                    bgcolor: "#b39345",
-                  },
-                }}
-                onClick={onLogout}
-              >
-                {isLoading ? "Loading..." : "Log Out"}
-              </Button>
-
-              <Box sx={{ mt: 3, textAlign: "center" }}>
-                <Button
-                  variant="contained"
-                  disabled={isLoading}
-                  sx={{
-                    bgcolor: "#c9a952",
-                    width: "100%",
-                    maxWidth: 400,
-                    height: 56,
-                    fontSize: 18,
-                    fontWeight: "bold",
-                    "&:hover": {
-                      bgcolor: "#b39345",
-                    },
-                  }}
-                  onClick={onFetchUser}
-                >
-                  {isLoading ? "Loading..." : "Fetch User"}
-                </Button>
-              </Box>
-            </Box>
           </Box>
         </Box>
       </Box>

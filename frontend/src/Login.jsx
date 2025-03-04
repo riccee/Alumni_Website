@@ -16,7 +16,7 @@ const Login = ({ onSuccess }) => {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "white",
+          backgroundColor: "#f5f5f5",
         }}
       >
         {/* Main Content */}
