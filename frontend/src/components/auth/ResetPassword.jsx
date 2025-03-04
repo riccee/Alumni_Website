@@ -6,66 +6,66 @@ import {
   MDBCol,
   MDBInput,
 } from "mdb-react-ui-kit";
-import { Link } from "@mui/material";
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Box, CssBaseline } from "@mui/material";
-import Footer from "./Footer";
 
-const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState("");
+
+const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const token = searchParams.get("token");
+  
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("success");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      setMessageType("error");
+      setMessage("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
     setMessage(null);
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
-        credentials: "include",
+        body: JSON.stringify({
+          token: token,
+          new_password: newPassword,
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         setMessageType("success");
-        setMessage(
-          "If an account exists with this email, you will receive password reset instructions."
-        );
-        setEmail(""); // Clear the form
+        setMessage("Password reset successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/"); // Redirect to login page after 2 seconds
+        }, 2000);
       } else {
         setMessageType("error");
-        setMessage(data.detail || "An error occurred. Please try again.");
+        setMessage(data.detail || "Failed to reset password");
       }
     } catch (error) {
       setMessageType("error");
-      setMessage("An error occurred. Please try again later.");
+      setMessage("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-    <CssBaseline />
-
-    <Box
-      sx={{
-        width: "100vw",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "white",
-      }}
-    >
     <MDBContainer fluid>
       <MDBRow>
         <MDBCol sm="6">
@@ -74,27 +74,36 @@ const ForgotPasswordPage = () => {
               className="fw-normal mb-3 ps-5 pb-3"
               style={{ letterSpacing: "1px" }}
             >
-              Forgot Password
+              Reset Password
             </h3>
 
             <form onSubmit={handleSubmit}>
               <MDBInput
                 wrapperClass="mb-4 mx-5 w-100"
-                label="Email"
-                id="formControlLg"
-                type="email"
+                label="New Password"
+                id="newPassword"
+                type="password"
                 size="lg"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+
+              <MDBInput
+                wrapperClass="mb-4 mx-5 w-100"
+                label="Confirm New Password"
+                id="confirmPassword"
+                type="password"
+                size="lg"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
 
               {message && (
                 <div
                   className={`mx-5 mb-4 p-3 text-center ${
-                    messageType === "success"
-                      ? "text-success"
-                      : "text-danger"
+                    messageType === "success" ? "text-success" : "text-danger"
                   }`}
                   style={{
                     backgroundColor:
@@ -114,49 +123,23 @@ const ForgotPasswordPage = () => {
                 size="lg"
                 disabled={isLoading}
               >
-                {isLoading ? "Sending..." : "Reset Password"}
+                {isLoading ? "Resetting..." : "Reset Password"}
               </MDBBtn>
             </form>
-
-            <div className="text-center">
-              <p className="mb-0">
-                Remember your password?{" "}
-                <Link
-                  component="button"
-                  onClick={() => navigate('/login')}
-                  sx={{ textDecoration: "none" }}
-                >
-                  Login here
-                </Link>
-              </p>
-              <p className="mt-2">
-                Don't have an account?{" "}
-                <Link
-                  component="button"
-                  onClick={() => navigate('/signup')}
-                  sx={{ textDecoration: "none" }}
-                >
-                  Register here
-                </Link>
-              </p>
-            </div>
           </div>
         </MDBCol>
 
         <MDBCol sm="6" className="d-none d-sm-block px-0">
           <img
             src="https://today.citadel.edu/wp-content/uploads/2021/06/Jacob-Perlmutter-CGC-09.jpg"
-            alt="Login image"
+            alt="Reset Password"
             className="w-100"
             style={{ objectFit: "cover", objectPosition: "left" }}
           />
         </MDBCol>
       </MDBRow>
-      </MDBContainer>
-      <Footer />
-    </Box>
-    </>
+    </MDBContainer>
   );
 };
 
-export default ForgotPasswordPage;
+export default ResetPassword;

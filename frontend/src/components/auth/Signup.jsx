@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Link, Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthProvider"; 
+
 import {
   MDBBtn,
   MDBContainer,
   MDBRow,
   MDBCol,
   MDBInput,
+  MDBCard,
+  MDBCardBody,
 } from "mdb-react-ui-kit";
-import { useNavigate } from "react-router-dom";
 
 const validatePassword = (password) => {
   const errors = [];
@@ -22,7 +26,7 @@ const validatePassword = (password) => {
   return errors;
 };
 
-const SignupForm = ({ onSuccess }) => {
+const Signup = ({ onSuccess }) => {
   const [email, setEmail] = useState("");
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
@@ -32,6 +36,8 @@ const SignupForm = ({ onSuccess }) => {
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsAuthenticated } = useAuthContext();
+
   const navigate = useNavigate();
 
   const handlePasswordChange = (e) => {
@@ -46,7 +52,6 @@ const SignupForm = ({ onSuccess }) => {
     }
   };
 
-  // Handle Confirm Password Change
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     if (password !== e.target.value) {
@@ -93,7 +98,7 @@ const SignupForm = ({ onSuccess }) => {
         throw new Error(errorText);
       }
 
-      onSuccess();
+      setIsAuthenticated(true);
       navigate("/");
     } catch (error) {
       console.error("Signup failed:", error);
@@ -105,9 +110,27 @@ const SignupForm = ({ onSuccess }) => {
 
   return (
     <>
-      <MDBContainer fluid>
+      <MDBContainer fluid className="p-4">
         <MDBRow>
-          <MDBCol sm="6">
+          <MDBCol md="6" className="text-center text-md-start d-flex flex-column justify-content-center">
+
+          <h1 className="my-5 display-3 fw-bold ls-tight px-3">
+            AMHS Alumni Directory <br />
+          </h1>
+
+          <p className="px-3" style={{ color: "hsl(217, 10%, 50.8%)" }}>
+            The AMHS Alumni Club website serves as a bridge between alumni and
+            current students, fostering ongoing connections and support. It
+            provides a platform for alumni to stay engaged with the current AMHS
+            community, share experiences, and offer guidance to current
+            students. The website's goal is to strengthen the AMHS community,
+            creating a network that benefits both past and present students.
+          </p>
+        </MDBCol>
+        <MDBCol md="6">
+          <MDBCard className="my-5">
+            <MDBCardBody className="p-5">
+            
             <div className="d-flex flex-column justify-content-center h-custom-2 w-75 pt-4">
               <h3
                 className="fw-normal mb-3 ps-5 pb-3"
@@ -233,20 +256,13 @@ const SignupForm = ({ onSuccess }) => {
                 </Link>
               </p>
             </div>
-          </MDBCol>
-
-          <MDBCol sm="6" className="d-none d-sm-block px-0">
-            <img
-              src="https://today.citadel.edu/wp-content/uploads/2021/06/Jacob-Perlmutter-CGC-09.jpg"
-              alt="Login image"
-              className="w-100"
-              style={{ objectFit: "cover", objectPosition: "left" }}
-            />
-          </MDBCol>
+          </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
         </MDBRow>
       </MDBContainer>
     </>
   );
 };
 
-export default SignupForm;
+export default Signup;

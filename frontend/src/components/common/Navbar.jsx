@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import { useAuthContext } from "../../context/AuthProvider";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,10 +10,12 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
+
 const settings = ["Logout"];
 
-const Header = ({ isAuthenticated, onLogout }) => {
+const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { isAuthenticated, isAuthLoading, logout } = useAuthContext();
 
   const handleOpenUserMenu = (event) => {
     event.preventDefault();
@@ -82,7 +85,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
                 <MenuItem
                   key={setting}
                   onClick={() => {
-                    onLogout();
+                    logout();
                     handleCloseUserMenu();
                   }}
                 >
@@ -98,4 +101,4 @@ const Header = ({ isAuthenticated, onLogout }) => {
     </AppBar>
   );
 };
-export default Header;
+export default Navbar;

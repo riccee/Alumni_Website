@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { fetchDB } from "../utils/apiService.js"
+
 import {
   Box,
   Typography,
@@ -12,7 +14,7 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
+const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [alumniData, setAlumniData] = useState([]); // State to store fetched data
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,15 +23,16 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const data = await onFetchDB();
+        const data = await fetchDB(); 
         if (data) setAlumniData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
       setIsLoading(false);
     };
+
     fetchData();
-  }, [onFetchDB]);
+  }, []);
 
   const filteredAlumni = alumniData.filter((item) =>
     `${item.First_Name} ${item.Last_Name}`
@@ -155,4 +158,4 @@ const Directory = ({ onLogout, onFetchUser, onFetchDB }) => {
   );
 };
 
-export default Directory;
+export default HomePage;

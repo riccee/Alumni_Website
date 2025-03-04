@@ -1,9 +1,9 @@
-import React, { useState } from "react";
 import { Box, CssBaseline } from "@mui/material";
-import Footer from "./components/Footer";
-import SignupForm from "./components/SignupForm";
+import Footer from "../components/common/Footer";
+import Signup from "../components/auth/Signup";
 
-const Signup = ({ onSuccess }) => {
+
+const SignupPage = ({ onSuccess }) => {
   return (
     <>
       {/* Remove default browser margins/padding */}
@@ -20,11 +20,11 @@ const Signup = ({ onSuccess }) => {
       >
         {/* Main Content */}
 
-        <SignupForm onSuccess={onSuccess} />
+        <Signup/>
         <Footer />
       </Box>
     </>
   );
 };
 
-export default Signup;
+export default SignupPage;

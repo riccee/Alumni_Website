@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthProvider"; 
 
 import {
   MDBBtn,
@@ -12,11 +13,12 @@ import {
   MDBCardBody,
 } from "mdb-react-ui-kit";
 
-const LoginForm = ({ onSuccess = () => {} }) => {
+const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsAuthenticated } = useAuthContext();
 
   const navigate = useNavigate();
 
@@ -47,7 +49,7 @@ const LoginForm = ({ onSuccess = () => {} }) => {
         throw new Error("Login failed");
       }
 
-      onSuccess();
+      setIsAuthenticated(true);
       navigate("/");
     } catch (error) {
       console.error("Error during login:", error);
