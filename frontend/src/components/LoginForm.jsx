@@ -107,7 +107,7 @@ const LoginForm = ({ onSuccess = () => {} }) => {
                   </Alert>
                 )}
 
-                <div className="text-end mb-4 mx-5">
+                <div className="mb-4 mx-5 ms-5">
                   <Link
                     component="button"
                     onClick={() => navigate('/forgot-password')}
