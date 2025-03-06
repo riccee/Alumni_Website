@@ -7,21 +7,20 @@ import ResetPasswordPage from "../pages/ResetPasswordPage";
 import RequireAuth from "../components/auth/RequireAuth";
 
 const RoutesConfig = () => {
-    return (
-      <Routes>
-
-        {/* protected routes */}
-        <Route element={<RequireAuth />}>
+  return (
+    <Routes>
+      {/* protected routes */}
+      <Route element={<RequireAuth />}>
         <Route path="/" element={<HomePage />} />
-        </Route>
+      </Route>
 
-        {/* public routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-      </Routes>
-    );
-  };
+      {/* public routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+    </Routes>
+  );
+};
 
 export default RoutesConfig;

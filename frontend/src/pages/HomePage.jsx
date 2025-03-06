@@ -16,7 +16,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [alumniData, setAlumniData] = useState([]); // State to store fetched data
+  const [alumniData, setAlumniData] = useState([]); 
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -34,11 +34,11 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  const filteredAlumni = alumniData.filter((item) =>
+  const filteredAlumni = alumniData?.filter((item) =>
     `${item.First_Name} ${item.Last_Name}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase()),
-  );
+  ) || [];
 
   return (
     <>

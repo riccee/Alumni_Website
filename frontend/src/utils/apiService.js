@@ -10,10 +10,21 @@ export const fetchUserData = async () => {
   
   export const fetchDB = async () => {
     try {
-      const response = await fetch("/api/alumni", { credentials: "include" });
+      const response = await fetch('/api/alumni', {
+        credentials: 'include',  // Important for cookies
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
       return await response.json();
     } catch (error) {
-      console.error("Error fetching DB:", error);
-      return [];
+      console.error('Error fetching data:', error);
+      throw error;
     }
   };

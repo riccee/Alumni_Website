@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import { Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthProvider"; 
-
 import {
   MDBBtn,
   MDBContainer,
@@ -14,7 +13,7 @@ import {
 } from "mdb-react-ui-kit";
 
 const Login = () => {
-  const { setAuth } = useContext(AuthContext);
+  const { loginApiCall } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -34,30 +33,8 @@ const Login = () => {
       formData.append("username", email);
     }
     formData.append("password", password);
-
-    try {
-      const response = await fetch("/api/auth/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-      
-       const userResponse = await fetch('/api/auth/me', {
-            credentials: 'include'
-        });
-
-      if (userResponse) {setAuth({ isAuthenticated: true });};
-      
-      
-
-      navigate("/", { replace: true });
+    try{
+      await loginApiCall(formData)
     } catch (error) {
       console.error("Error during login:", error);
       setPasswordError("Incorrect Email or Password");
@@ -155,6 +132,7 @@ const Login = () => {
                     style={{ backgroundColor: "#c9a952" }}
                     size="lg"
                     type="submit"
+                    disabled={isLoading}
                   >
                     Login
                   </MDBBtn>

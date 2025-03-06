@@ -17,8 +17,7 @@ const settings = ["Logout"];
 
 const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { auth } = useContext(AuthContext);
-  const logout = useLogout();
+  const { user, logoutApiCall } = useContext(AuthContext);
 
 
   const handleOpenUserMenu = (event) => {
@@ -56,7 +55,7 @@ const Navbar = () => {
           />
         </Box>
 
-        {auth?.isAuthenticated && (
+        {user && (
           <Box
             sx={{
               display: "flex",
@@ -91,7 +90,7 @@ const Navbar = () => {
                   key={setting}
                   onClick={() => {
                     handleCloseUserMenu();
-                    logout();
+                    logoutApiCall();
                   }}
                 >
                   <Typography sx={{ textAlign: "center" }}>
