@@ -56,6 +56,11 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.email}, 
     )
+
+    # refresh_token = create_refresh_token(
+    #     data={"sub": user.email}, 
+    # )
+
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
@@ -66,8 +71,66 @@ async def login_for_access_token(
         path="/"
     )
 
+    # response.set_cookie(
+    #     key="refresh_token",
+    #     value=refresh_token,  # No 'Bearer' prefix needed for refresh tokens
+    #     httponly=True,
+    #     secure=True,
+    #     samesite="strict",
+    #     max_age=60 * 60 * 24 * 7,  # 7 days
+    #     path="/"
+    # )
+
     return {"access_token": access_token, "token_type": "bearer"}
 
+# @auth_router.post("/refresh", response_model=Token, summary="Refresh token")
+# async def resfresh(request: Request, response: Response):
+#     refresh_token = request.cookies.get("refresh_token")
+    
+#     if not refresh_token:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Refresh token missing",
+#         )
+
+#     try:
+#         payload = jwt.decode(
+#             refresh_token,
+#             settings.SECRET_KEY,
+#             algorithms=[settings.ALGORITHM]
+#         )
+#         email = payload.get("sub")
+#         if not email:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Invalid refresh token",
+#             )
+#     except JWTError:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid refresh token",
+#         )
+
+#     user = get_user_by_email(email)
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="User not found",
+#         )
+
+#     new_access_token = create_access_token(data={"sub": user.email})
+
+#     response.set_cookie(
+#         key="access_token",
+#         value=f"Bearer {new_access_token}",
+#         httponly=True,
+#         secure=True,
+#         samesite="strict",
+#         max_age=3600,
+#         path="/"
+#     )
+
+#     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @auth_router.get("/me", response_model=UserRead, summary="Get the current user")
 async def read_users_me(current_user: UserInDB = Depends(get_current_user_from_cookie)):

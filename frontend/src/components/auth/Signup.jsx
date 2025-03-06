@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthProvider"; 
+import AuthContext from "../../context/AuthProvider";
 
 import {
   MDBBtn,
@@ -26,7 +26,7 @@ const validatePassword = (password) => {
   return errors;
 };
 
-const Signup = ({ onSuccess }) => {
+const Signup = () => {
   const [email, setEmail] = useState("");
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
@@ -36,7 +36,7 @@ const Signup = ({ onSuccess }) => {
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setIsAuthenticated } = useAuthContext();
+  const { signupApiCall } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -86,23 +86,10 @@ const Signup = ({ onSuccess }) => {
     };
 
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
-      }
-
-      setIsAuthenticated(true);
-      navigate("/");
+      await signupApiCall(payload);
     } catch (error) {
-      console.error("Signup failed:", error);
-      alert("Signup failed: " + error.message);
+      console.error("Error during signup:", error);
+      setPasswordError("Incorrect Email or Password");
     } finally {
       setIsLoading(false);
     }
@@ -112,153 +99,163 @@ const Signup = ({ onSuccess }) => {
     <>
       <MDBContainer fluid className="p-4">
         <MDBRow>
-          <MDBCol md="6" className="text-center text-md-start d-flex flex-column justify-content-center">
+          <MDBCol
+            md="6"
+            className="text-center text-md-start d-flex flex-column justify-content-center"
+          >
+            <h1 className="my-5 display-3 fw-bold ls-tight px-3">
+              AMHS Alumni Directory <br />
+            </h1>
 
-          <h1 className="my-5 display-3 fw-bold ls-tight px-3">
-            AMHS Alumni Directory <br />
-          </h1>
+            <p className="px-3" style={{ color: "hsl(217, 10%, 50.8%)" }}>
+              The AMHS Alumni Club website serves as a bridge between alumni and
+              current students, fostering ongoing connections and support. It
+              provides a platform for alumni to stay engaged with the current
+              AMHS community, share experiences, and offer guidance to current
+              students. The website's goal is to strengthen the AMHS community,
+              creating a network that benefits both past and present students.
+            </p>
+          </MDBCol>
+          <MDBCol md="6">
+            <MDBCard className="my-5">
+              <MDBCardBody className="p-5">
+                <div className="d-flex flex-column justify-content-center h-custom-2 w-75 pt-4">
+                  <h3
+                    className="fw-normal mb-3 ps-5 pb-3"
+                    style={{ letterSpacing: "1px" }}
+                  >
+                    Sign Up
+                  </h3>
 
-          <p className="px-3" style={{ color: "hsl(217, 10%, 50.8%)" }}>
-            The AMHS Alumni Club website serves as a bridge between alumni and
-            current students, fostering ongoing connections and support. It
-            provides a platform for alumni to stay engaged with the current AMHS
-            community, share experiences, and offer guidance to current
-            students. The website's goal is to strengthen the AMHS community,
-            creating a network that benefits both past and present students.
-          </p>
-        </MDBCol>
-        <MDBCol md="6">
-          <MDBCard className="my-5">
-            <MDBCardBody className="p-5">
-            
-            <div className="d-flex flex-column justify-content-center h-custom-2 w-75 pt-4">
-              <h3
-                className="fw-normal mb-3 ps-5 pb-3"
-                style={{ letterSpacing: "1px" }}
-              >
-                Sign Up
-              </h3>
+                  <form onSubmit={handleSubmit}>
+                    <MDBRow>
+                      <MDBCol col="6">
+                        <MDBInput
+                          wrapperClass="mb-4 mx-5 w-100"
+                          label="First Name"
+                          id="formControlLg"
+                          type="firstname"
+                          size="lg"
+                          value={firstname}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                        />
+                      </MDBCol>
+                      <MDBCol col="6">
+                        <MDBInput
+                          wrapperClass="mb-4 mx-5 w-100"
+                          label="Last Name"
+                          id="formControlLg"
+                          type="lastname"
+                          size="lg"
+                          value={lastname}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                        />
+                      </MDBCol>
+                    </MDBRow>
 
-              <form onSubmit={handleSubmit}>
-                <MDBRow>
-                  <MDBCol col="6">
                     <MDBInput
                       wrapperClass="mb-4 mx-5 w-100"
-                      label="First Name"
+                      label="Email"
                       id="formControlLg"
-                      type="firstname"
+                      type="email"
                       size="lg"
-                      value={firstname}
-                      onChange={(e) => setFirstName(e.target.value)}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                  </MDBCol>
-                  <MDBCol col="6">
+
                     <MDBInput
                       wrapperClass="mb-4 mx-5 w-100"
-                      label="Last Name"
+                      label="Password"
                       id="formControlLg"
-                      type="lastname"
+                      type="password"
                       size="lg"
-                      value={lastname}
-                      onChange={(e) => setLastName(e.target.value)}
+                      value={password}
+                      onChange={handlePasswordChange}
                       required
                     />
-                  </MDBCol>
-                </MDBRow>
 
-                <MDBInput
-                  wrapperClass="mb-4 mx-5 w-100"
-                  label="Email"
-                  id="formControlLg"
-                  type="email"
-                  size="lg"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                    {passwordErrors.length > 0 && (
+                      <Alert
+                        severity="error"
+                        sx={{
+                          mt: -1,
+                          mb: 2,
+                          mx: 6,
+                          mr: -6,
+                          fontSize: "0.8rem",
+                          p: 0.5,
+                        }}
+                      >
+                        {passwordErrors.map((error, index) => (
+                          <li key={index}>{error}</li>
+                        ))}
+                      </Alert>
+                    )}
 
-                <MDBInput
-                  wrapperClass="mb-4 mx-5 w-100"
-                  label="Password"
-                  id="formControlLg"
-                  type="password"
-                  size="lg"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  required
-                />
+                    <MDBInput
+                      wrapperClass="mb-4 mx-5 w-100"
+                      label="Confirm Password"
+                      id="formControlLg"
+                      type="password"
+                      size="lg"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      required
+                    />
 
-                {passwordErrors.length > 0 && (
-                  <Alert
-                    severity="error"
-                    sx={{
-                      mt: -1,
-                      mb: 2,
-                      mx: 6,
-                      mr: -6,
-                      fontSize: "0.8rem",
-                      p: 0.5,
-                    }}
-                  >
-                    {passwordErrors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </Alert>
-                )}
+                    {confirmPasswordError && (
+                      <Alert
+                        severity="error"
+                        sx={{
+                          mt: -1,
+                          mb: 2,
+                          mx: 6,
+                          fontSize: "0.8rem",
+                          p: 0.5,
+                        }}
+                      >
+                        {confirmPasswordError}
+                      </Alert>
+                    )}
 
-                <MDBInput
-                  wrapperClass="mb-4 mx-5 w-100"
-                  label="Confirm Password"
-                  id="formControlLg"
-                  type="password"
-                  size="lg"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  required
-                />
+                    <MDBInput
+                      wrapperClass="mb-4 mx-5 w-100"
+                      label="Referral Code"
+                      id="formControlLg"
+                      type="password"
+                      size="lg"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value)}
+                      required
+                    />
 
-                {confirmPasswordError && (
-                  <Alert
-                    severity="error"
-                    sx={{ mt: -1, mb: 2, mx: 6, fontSize: "0.8rem", p: 0.5 }}
-                  >
-                    {confirmPasswordError}
-                  </Alert>
-                )}
-
-                <MDBInput
-                  wrapperClass="mb-4 mx-5 w-100"
-                  label="Referral Code"
-                  id="formControlLg"
-                  type="password"
-                  size="lg"
-                  value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value)}
-                  required
-                />
-
-                <MDBBtn
-                  className="mb-4 px-5 mx-5 w-100"
-                  style={{ backgroundColor: "#c9a952" }}
-                  size="lg"
-                  type="submit"
-                  disabled={passwordErrors.length > 0 || confirmPasswordError || isLoading}
-                >
-                  Sign Up
-                </MDBBtn>
-              </form>
-              {/* <p className="small mb-5 pb-lg-3 ms-5"><a class="text-muted" href="#!">Forgot password?</a></p> */}
-              <p className="ms-5">
-                Already have an account?{" "}
-                <Link component="button" onClick={() => navigate("/login")}>
-                  Login here
-                </Link>
-              </p>
-            </div>
-          </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
+                    <MDBBtn
+                      className="mb-4 px-5 mx-5 w-100"
+                      style={{ backgroundColor: "#c9a952" }}
+                      size="lg"
+                      type="submit"
+                      disabled={
+                        passwordErrors.length > 0 ||
+                        confirmPasswordError ||
+                        isLoading
+                      }
+                    >
+                      Sign Up
+                    </MDBBtn>
+                  </form>
+                  <p className="ms-5">
+                    Already have an account?{" "}
+                    <Link component="button" onClick={() => navigate("/login")}>
+                      Login here
+                    </Link>
+                  </p>
+                </div>
+              </MDBCardBody>
+            </MDBCard>
+          </MDBCol>
         </MDBRow>
       </MDBContainer>
     </>
