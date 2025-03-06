@@ -60,7 +60,7 @@ const Navbar = () => {
               p: 2,
             }}
           >
-            <Tooltip>
+            <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <Avatar src="/broken-image.jpg" />
               </IconButton>
