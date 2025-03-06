@@ -1,5 +1,6 @@
 import React from "react";
-import { useAuthContext } from "../../context/AuthProvider";
+import { useContext } from "react"
+import AuthContext from "../../context/AuthProvider"; 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,13 +10,16 @@ import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import useLogout from "../../hooks/useLogout";
 
 
 const settings = ["Logout"];
 
 const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { isAuthenticated, isAuthLoading, logout } = useAuthContext();
+  const { auth } = useContext(AuthContext);
+  const logout = useLogout();
+
 
   const handleOpenUserMenu = (event) => {
     event.preventDefault();
@@ -25,6 +29,7 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: "#14542c" }}>
@@ -51,7 +56,7 @@ const Navbar = () => {
           />
         </Box>
 
-        {isAuthenticated && (
+        {auth?.isAuthenticated && (
           <Box
             sx={{
               display: "flex",
@@ -85,8 +90,8 @@ const Navbar = () => {
                 <MenuItem
                   key={setting}
                   onClick={() => {
-                    logout();
                     handleCloseUserMenu();
+                    logout();
                   }}
                 >
                   <Typography sx={{ textAlign: "center" }}>

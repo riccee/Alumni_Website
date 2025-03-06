@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthProvider"; 
+import AuthContext from "../../context/AuthProvider"; 
 
 import {
   MDBBtn,
@@ -13,12 +13,12 @@ import {
   MDBCardBody,
 } from "mdb-react-ui-kit";
 
-const LoginForm = () => {
+const Login = () => {
+  const { setAuth } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setIsAuthenticated } = useAuthContext();
 
   const navigate = useNavigate();
 
@@ -48,9 +48,16 @@ const LoginForm = () => {
       if (!response.ok) {
         throw new Error("Login failed");
       }
+      
+       const userResponse = await fetch('/api/auth/me', {
+            credentials: 'include'
+        });
 
-      setIsAuthenticated(true);
-      navigate("/");
+      if (userResponse) {setAuth({ isAuthenticated: true });};
+      
+      
+
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Error during login:", error);
       setPasswordError("Incorrect Email or Password");
@@ -173,4 +180,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default Login;

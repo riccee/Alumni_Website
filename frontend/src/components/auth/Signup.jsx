@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthProvider"; 
+import AuthContext from "../../context/AuthProvider"; 
 
 import {
   MDBBtn,
@@ -36,7 +36,7 @@ const Signup = ({ onSuccess }) => {
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setIsAuthenticated } = useAuthContext();
+  const { setAuth } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -98,7 +98,8 @@ const Signup = ({ onSuccess }) => {
         throw new Error(errorText);
       }
 
-      setIsAuthenticated(true);
+      setAuth({ isAuthenticated: true });
+
       navigate("/");
     } catch (error) {
       console.error("Signup failed:", error);

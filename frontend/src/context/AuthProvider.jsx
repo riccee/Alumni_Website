@@ -1,37 +1,46 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [auth, setAuth] = useState({
+    isAuthenticated: false
+  });
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const verifyAuth = async () => {
     try {
-      const response = await fetch("/api/auth/me", { credentials: "include" });
-      if (!response.ok) throw new Error("Not authenticated");
-      setIsAuthenticated(true);
-    } catch {
-      setIsAuthenticated(false);
-    } finally {
-      setIsAuthLoading(false);
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        setAuth({
+          isAuthenticated: true,
+        });
+      } else {
+        setAuth({
+          isAuthenticated: false,
+        });
+      }
+    } catch (error) {
+      console.error('Auth verification failed:', error);
+      setAuth({
+        isAuthenticated: false,
+      });
     }
   };
 
-  const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setIsAuthenticated(false);
-  };
+  useEffect(() => {
+    verifyAuth();
+    const interval = setInterval(verifyAuth, 5 * 60 * 1000); // Check every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isAuthLoading, logout, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ auth, setAuth, verifyAuth }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuthContext = () => useContext(AuthContext);
+export default AuthContext;
