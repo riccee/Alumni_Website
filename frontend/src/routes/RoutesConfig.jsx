@@ -4,6 +4,7 @@ import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import UniversititesPage from "../pages/UniverisitiesPage";
 import RequireAuth from "../components/auth/RequireAuth";
 
 const RoutesConfig = () => {
@@ -12,6 +13,7 @@ const RoutesConfig = () => {
       {/* protected routes */}
       <Route element={<RequireAuth />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/universities" element={<UniversititesPage />} />
       </Route>
 
       {/* public routes */}
@@ -21,6 +23,7 @@ const RoutesConfig = () => {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
     </Routes>
   );
-};
 
+};
 export default RoutesConfig;
+

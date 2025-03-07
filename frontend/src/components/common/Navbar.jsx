@@ -1,6 +1,6 @@
 import React from "react";
-import { useContext } from "react"
-import AuthContext from "../../context/AuthProvider"; 
+import { useContext } from "react";
+import AuthContext from "../../context/AuthProvider";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,14 +10,15 @@ import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-
+import { Link } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const settings = ["Logout"];
 
 const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { user, logoutApiCall } = useContext(AuthContext);
-
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
     event.preventDefault();
@@ -27,7 +28,6 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: "#14542c" }}>
@@ -55,50 +55,126 @@ const Navbar = () => {
         </Box>
 
         {user && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              p: 2,
-            }}
-          >
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu}>
-                <Avatar src="/broken-image.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "60px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 4,
+                marginLeft: "auto",
+                marginRight: "2rem",
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting}
-                  onClick={() => {
-                    handleCloseUserMenu();
-                    logoutApiCall();
-                  }}
-                >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+              <Link
+                sx={{
+                  textDecoration: "none",
+                  color: "white",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  position: "relative",
+                  "&:hover": {
+                    color: "white",
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    width: "0%",
+                    height: "2px",
+                    bottom: -4,
+                    left: 0,
+                    backgroundColor: "#c9a952",
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
+                }}
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+              >
+                Directory
+              </Link>
+
+              <Link
+                sx={{
+                  textDecoration: "none",
+                  color: "white",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  position: "relative",
+                  "&:hover": {
+                    color: "white",
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    width: "0%",
+                    height: "2px",
+                    bottom: -4,
+                    left: 0,
+                    backgroundColor: "#c9a952",
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
+                }}
+                href="/universities"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/universities");
+                }}
+              >
+                Universities
+              </Link>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                p: 2,
+              }}
+            >
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu}>
+                  <Avatar src="/broken-image.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "60px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      logoutApiCall();
+                    }}
+                  >
+                    <Typography sx={{ textAlign: "center" }}>
+                      {setting}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </>
         )}
       </Toolbar>
     </AppBar>
