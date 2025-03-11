@@ -36,6 +36,7 @@ const Navbar = () => {
         sx={{
           justifyContent: "space-between",
           height: 80,
+          width: "100vw",
         }}
       >
         <Box
@@ -59,7 +60,7 @@ const Navbar = () => {
             <Box
               sx={{
                 display: "flex",
-                gap: 4,
+                gap: 3,
                 marginLeft: "auto",
                 marginRight: "2rem",
               }}
@@ -135,7 +136,6 @@ const Navbar = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                p: 2,
               }}
             >
               <Tooltip title="Open settings">
