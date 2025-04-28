@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from app.models.user import UserRead, Token, TokenData, UserCreate, UserInDB
-from app.services.user_service import authenticate_user, create_user, get_user_by_email
-from app.core.security import create_access_token
+from app.models.user import UserRead, Token, TokenData, UserCreate, UserInDB, UserEdit, Alumni, AlumniLinkRequest
+from app.services.user_service import authenticate_user, create_user, get_user_by_email, update_user_info, update_alumni_info, link_user_to_alumni, get_user_alumni_info
+from app.core.security import create_access_token, verify_password
 from app.core.config import settings
 
 auth_router = APIRouter()
@@ -57,10 +57,6 @@ async def login_for_access_token(
         data={"sub": user.email}, 
     )
 
-    # refresh_token = create_refresh_token(
-    #     data={"sub": user.email}, 
-    # )
-
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
@@ -71,70 +67,10 @@ async def login_for_access_token(
         path="/"
     )
 
-    # response.set_cookie(
-    #     key="refresh_token",
-    #     value=refresh_token,  # No 'Bearer' prefix needed for refresh tokens
-    #     httponly=True,
-    #     secure=True,
-    #     samesite="strict",
-    #     max_age=60 * 60 * 24 * 7,  # 7 days
-    #     path="/"
-    # )
-
     return {"access_token": access_token, "token_type": "bearer"}
-
-# @auth_router.post("/refresh", response_model=Token, summary="Refresh token")
-# async def resfresh(request: Request, response: Response):
-#     refresh_token = request.cookies.get("refresh_token")
-    
-#     if not refresh_token:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Refresh token missing",
-#         )
-
-#     try:
-#         payload = jwt.decode(
-#             refresh_token,
-#             settings.SECRET_KEY,
-#             algorithms=[settings.ALGORITHM]
-#         )
-#         email = payload.get("sub")
-#         if not email:
-#             raise HTTPException(
-#                 status_code=status.HTTP_401_UNAUTHORIZED,
-#                 detail="Invalid refresh token",
-#             )
-#     except JWTError:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Invalid refresh token",
-#         )
-
-#     user = get_user_by_email(email)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="User not found",
-#         )
-
-#     new_access_token = create_access_token(data={"sub": user.email})
-
-#     response.set_cookie(
-#         key="access_token",
-#         value=f"Bearer {new_access_token}",
-#         httponly=True,
-#         secure=True,
-#         samesite="strict",
-#         max_age=3600,
-#         path="/"
-#     )
-
-#     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @auth_router.get("/me", response_model=UserRead, summary="Get the current user")
 async def read_users_me(current_user: UserInDB = Depends(get_current_user_from_cookie)):
-    # Convert UserInDB to a public schema (UserRead)
     return current_user
 
 
@@ -171,3 +107,35 @@ async def logout(response: Response):
         httponly=True
     )
     return {"message": "Logged out successfully"}
+
+@auth_router.post("/edit_user_info", summary="Edit the current user")
+async def edit_user(user_update: UserEdit, current_user: UserInDB = Depends(get_current_user_from_cookie)):
+    user = authenticate_user(user_update.email, user_update.password)
+    if user and user.email == current_user.email:
+        return await update_user_info(user_update)
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+@auth_router.post("/edit_alumni_info", summary="Edit alumni information in DB")
+async def edit_alumni(alumni_update: Alumni, current_user: UserInDB = Depends(get_current_user_from_cookie)):
+    return await update_alumni_info(alumni_update, current_user)
+    
+@auth_router.post("/link_alumni", summary="Link user account to alumni record")
+async def link_alumni(
+    alumni_email: AlumniLinkRequest,
+    current_user: UserInDB = Depends(get_current_user_from_cookie)
+):
+    try:
+        result = await link_user_to_alumni(current_user.email, alumni_email.alumni_email)
+        return result
+        return {"status": "success", "message": "User linked to alumni record"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@auth_router.get("/my_alumni", summary="Retrieve alumni info linked to current user")
+async def get_my_alumni(current_user: UserInDB = Depends(get_current_user_from_cookie)):
+    try:
+        alumni_data = await get_user_alumni_info(current_user.email)
+        return alumni_data
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

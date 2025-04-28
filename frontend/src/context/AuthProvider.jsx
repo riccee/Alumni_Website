@@ -98,13 +98,41 @@ export const AuthProvider = ({ children }) => {
       alert("Signup failed: " + error.message);
     } 
   };
+
+  const editProfileApiCall = async (payload) => {
+    try {
+      const response = await fetch("/api/auth/edit_user_info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      const userResponse = await fetch("/api/auth/me", { 
+        credentials: "include" 
+      });
+
+      const userData = await userResponse.json();
+      setUser(userData);
+      localStorage.setItem("userProfile", JSON.stringify(userData));
+      navigate("/");
+    } catch (error) {
+      console.error("Edit failed:", error);
+      alert("Edit failed: " + error.message);
+    } 
+  };
   
 
 
   
 
   return (
-    <AuthContext.Provider value={{ signupApiCall, loginApiCall, logoutApiCall, user }}>
+    <AuthContext.Provider value={{ signupApiCall, loginApiCall, logoutApiCall, editProfileApiCall, user }}>
       {children}
     </AuthContext.Provider>
   );

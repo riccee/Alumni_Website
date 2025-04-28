@@ -101,14 +101,6 @@ const HomePage = () => {
             </Typography>
           </Typography>
 
-          <Typography
-            variant="h5"
-            textAlign="center"
-            sx={{ mt: 2, mb: -2, color: "gray" }}
-          >
-            RAAAAAA ALUMNI BITCH
-          </Typography>
-
           <Divider
             sx={{ bgcolor: "#14542c", height: 4, width: "100%", my: 4 }}
           />

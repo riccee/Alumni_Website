@@ -5,6 +5,7 @@ import SignupPage from "../pages/SignupPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import UniversititesPage from "../pages/UniverisitiesPage";
+import ProfilePage from "../pages/ProfilePage";
 import RequireAuth from "../components/auth/RequireAuth";
 
 const RoutesConfig = () => {
@@ -14,6 +15,7 @@ const RoutesConfig = () => {
       <Route element={<RequireAuth />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/universities" element={<UniversititesPage />} />
+        <Route path="/profile" element={<ProfilePage />}  />
       </Route>
 
       {/* public routes */}
