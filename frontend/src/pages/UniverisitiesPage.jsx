@@ -25,8 +25,6 @@ const UniversititesPage = () => {
     "https://1000logos.net/wp-content/uploads/2021/06/Furman-Paladins-logo.png",
     "https://seekvectors.com/files/download/16c84f546fbfd1d5d939f8d576864ece.png",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Cornell_University_seal.svg/1200px-Cornell_University_seal.svg.png",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Princeton_seal.svg/1200px-Princeton_seal.svg.png",
-    "https://content.sportslogos.net/logos/30/637/full/college_of_charleston_cougars_logo_secondary_20131241.png",
   ]; 
 
   return (
@@ -83,14 +81,6 @@ const UniversititesPage = () => {
             >
               Universities
             </Typography>
-          </Typography>
-
-          <Typography
-            variant="h5"
-            textAlign="center"
-            sx={{ mt: 2, mb: -2, color: "gray" }}
-          >
-            WEEWOOWEEWOOWEEWOOWEEWOO See the top univerisities AMHS Alumni attend   
           </Typography>
 
           <Divider
