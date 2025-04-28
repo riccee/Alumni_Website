@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link } from "@mui/material";
 import { useNavigate } from "react-router";
 
-const settings = ["Logout"];
+const settings = ["Edit Profile", "Logout"];
 
 const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -28,6 +28,15 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleMenuClick = (setting) => {
+    handleCloseUserMenu();
+    if (setting === "Edit Profile") {
+      navigate("/profile");
+    } else if (setting === "Logout") {
+      logoutApiCall();
+    }
+  }
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: "#14542c" }}>
@@ -163,8 +172,7 @@ const Navbar = () => {
                   <MenuItem
                     key={setting}
                     onClick={() => {
-                      handleCloseUserMenu();
-                      logoutApiCall();
+                      handleMenuClick(setting);
                     }}
                   >
                     <Typography sx={{ textAlign: "center" }}>
